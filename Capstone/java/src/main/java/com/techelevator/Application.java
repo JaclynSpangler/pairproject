@@ -65,9 +65,15 @@ public class Application {
 				String input = ui.promptForString("Please deposit WHOLE DOLLAR amount (do not include any decimals): ");
 				ui.output(sales.feedMoney(input));
 				ui.output(sales.displayBalance());
-				//	} else if (selection.equals(SUBMENU_OPTION_SELECT_PRODUCT)){
-				//		selectProduct(); //remove 1 from item.numberInSlot && subtract price from change balance
-				//&& if $0/0number in slot/costs more than they deposited then error message and send back to submenu
+					} else if (selection.equals(SUBMENU_OPTION_SELECT_PRODUCT)){
+				displayInventory();
+				String slotKey = ui.promptForString("Please make your selection (using the slot key): ");
+				vendingMachine.getTheItem(slotKey);
+				//user will input their selection
+				//---> if the customer balance = $0 return to submenu give error message --> deposit money, then make selection
+				//---> if the number of slots = 0 return to submenu
+				//---> costs more than they deposited then error message and send back to submenu
+				//selectProduct --> remove 1 from item.numberInSlot && subtract price from change balance
 				//return back to purchase menu
 			} else if (selection.equals(SUBMENU_OPTION_FINISH_TRANSACTION)) {
 				//		finishTransaction();//return change balance && return to main menu

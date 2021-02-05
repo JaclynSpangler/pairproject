@@ -59,12 +59,30 @@ public class VendingMachine {
             if (item.getNumberOfItemsInSlot() == 0) {//check once method for subtracting numberOfItems is made :)
                 display += item.getName() + "  is SOLD OUT\n";
             } else {
-                display += item.getName() + " " + item.getSlot() + " $" + item.getPrice() + "\n";
+                display += "Slot Key(" + item.getSlot() + ") " + item.getName()+ " $" + item.getPrice() + "\n";
             }
         }
 
         return display;
     }
+
+    public String getTheItem(String slotKey){
+        String result ="";
+       // Item selectedItem = new Item();
+
+        for(int i=0; i< listOfItems.size();i++){
+            Item item = listOfItems.get(i);
+            String slotKeyOfItem = item.getSlot();
+            if(slotKey.equals(slotKeyOfItem)) {
+                result = "HEYYYYYYYYYY";
+                break;
+            }
+        }
+
+        return result;
+    }
+
+
 
 
 

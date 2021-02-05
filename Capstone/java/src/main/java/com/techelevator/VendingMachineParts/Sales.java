@@ -11,7 +11,7 @@ public class Sales {
     private static final BigDecimal STARTING_BALANCE = BigDecimal.ZERO;
     private BigDecimal customerBalance = STARTING_BALANCE; //change balance and whats being deposited
 
-    MenuDrivenCLI menu = new MenuDrivenCLI();
+
 
     public BigDecimal getCustomerBalance() {
         return customerBalance;
