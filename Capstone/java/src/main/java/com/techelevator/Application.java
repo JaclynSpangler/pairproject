@@ -1,5 +1,6 @@
 package com.techelevator;
 
+import com.techelevator.VendingMachineParts.Sales;
 import com.techelevator.VendingMachineParts.VendingMachine;
 import com.techelevator.view.MenuDrivenCLI;
 
@@ -12,6 +13,7 @@ public class Application {
 	private static final String MAIN_MENU_OPTION_SALES_REPORT = "Sales Report";
 	private static final String[] MAIN_MENU_OPTIONS = {MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE,
 			MAIN_MENU_OPTION_EXIT, MAIN_MENU_OPTION_SALES_REPORT};
+
 	private static final String SUBMENU_OPTION_FEED_MONEY = "Feed Money";
 	private static final String SUBMENU_OPTION_SELECT_PRODUCT = "Select Product";
 	private static final String SUBMENU_OPTION_FINISH_TRANSACTION = "Finish Transaction";
@@ -20,6 +22,7 @@ public class Application {
 
 	private VendingMachine vendingMachine = new VendingMachine();
 	private final MenuDrivenCLI ui = new MenuDrivenCLI();
+	private Sales sales = new Sales();
 
 	public static void main(String[] args) {
 		Application application = new Application();
@@ -53,20 +56,26 @@ public class Application {
 	}
 
 	private void runSubmenu(){
-		String selection = ui.promptForSelection(SUBMENU_OPTIONS_PURCHASE);
 		boolean inSubmenu = true;
 
-		while(inSubmenu)
-		if (selection.equals(SUBMENU_OPTION_FEED_MONEY)) {
-			feedMoney(); //add whole dollars to change balance
-		} else if (selection.equals(SUBMENU_OPTION_SELECT_PRODUCT)){
-			selectProduct(); //remove 1 from item.numberInSlot && subtract price from change balance (maybe hold VM balance)
-		} else if (selection.equals(SUBMENU_OPTION_FINISH_TRANSACTION)){
-			finishTransaction();//return change balance && return to main menu
-			inSubmenu = false;
-		}
 
+		while(inSubmenu) {
+			String selection = ui.promptForSelection(SUBMENU_OPTIONS_PURCHASE);
+			if (selection.equals(SUBMENU_OPTION_FEED_MONEY)) {
+				String input = ui.promptForString("Please deposit WHOLE DOLLAR amount (do not include any decimals): ");
+				ui.output(sales.feedMoney(input));
+				ui.output(sales.displayBalance());
+				//	} else if (selection.equals(SUBMENU_OPTION_SELECT_PRODUCT)){
+				//		selectProduct(); //remove 1 from item.numberInSlot && subtract price from change balance
+				//&& if $0/0number in slot/costs more than they deposited then error message and send back to submenu
+				//return back to purchase menu
+			} else if (selection.equals(SUBMENU_OPTION_FINISH_TRANSACTION)) {
+				//		finishTransaction();//return change balance && return to main menu
+				inSubmenu = false;
+			}
+		}
 	}
+
 
 
 }
