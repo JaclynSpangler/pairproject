@@ -20,6 +20,7 @@ public class VendingMachine {
         getItemsFromFile();
     }
 
+    private Sales transactions = new Sales();
 
     public void getItemsFromFile() {
 
@@ -67,22 +68,66 @@ public class VendingMachine {
     }
 
     public String getTheItem(String slotKey){
-        String result ="";
+        String result ="nothing happened";
        // Item selectedItem = new Item();
 
         for(int i=0; i< listOfItems.size();i++){
-            Item item = listOfItems.get(i);
-            String slotKeyOfItem = item.getSlot();
-            if(slotKey.equals(slotKeyOfItem)) {
-                result = "HEYYYYYYYYYY";
-                break;
-            }
-        }
 
-        return result;
+            Item itemInLoop = listOfItems.get(i);
+            String slotKeyOfItemInLoop = itemInLoop.getSlot();
+
+            if(slotKey.equals(slotKeyOfItemInLoop)) {
+
+                if(transactions.getCustomerBalance().equals(BigDecimal.ZERO) || transactions.getCustomerBalance().compareTo(itemInLoop.getPrice()) < 0) {
+                    result = "Sorry, You do not have enough funds, please deposit more funds.";
+                } else if( itemInLoop.getNumberOfItemsInSlot()==0 ){
+                    result = "Item is SOLD OUT";
+                } else {//maybe turn this into a method
+                    itemInLoop.setNumberOfItemsInSlot(itemInLoop.getNumberOfItemsInSlot()-1);
+                    transactions.setCustomerBalance( transactions.getCustomerBalance().subtract(itemInLoop.getPrice()) );
+                    transactions.setVendingMachineBalance(transactions.getVendingMachineBalance().add(itemInLoop.getPrice()));
+                    result = displayPhrase(itemInLoop.getType());
+                }
+                break;
+                }
+            result = "could not find item";
+        }
+       return result;
     }
 
 
+
+    public String displayPhrase(String type){
+
+        String phrase = "";
+        if(type.equals("Chip")){
+            phrase = "Crunch Crunch, Yum!";
+
+        } else if(type.equals("Candy")){
+            phrase = "Munch Munch, Yum!";
+
+        } else if(type.equals("Drink")){
+            phrase = "Glug Glug, Yum!";
+
+        } else if (type.equals("Gum")){
+            phrase = "Chew Chew, Yum!";
+
+        }
+
+        return phrase;
+    }
+
+
+    public String feedMoney(String amount){
+        return transactions.feedMoney(amount);
+    }
+    public String displayBalance(){
+        return transactions.displayBalance();
+    }
+
+    public String returnChange(){
+        return transactions.returnChange();
+    }
 
 
 

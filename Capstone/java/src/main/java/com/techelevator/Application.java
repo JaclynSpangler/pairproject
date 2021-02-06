@@ -22,7 +22,6 @@ public class Application {
 
 	private VendingMachine vendingMachine = new VendingMachine();
 	private final MenuDrivenCLI ui = new MenuDrivenCLI();
-	private Sales sales = new Sales();
 
 	public static void main(String[] args) {
 		Application application = new Application();
@@ -63,20 +62,17 @@ public class Application {
 			String selection = ui.promptForSelection(SUBMENU_OPTIONS_PURCHASE);
 			if (selection.equals(SUBMENU_OPTION_FEED_MONEY)) {
 				String input = ui.promptForString("Please deposit WHOLE DOLLAR amount (do not include any decimals): ");
-				ui.output(sales.feedMoney(input));
-				ui.output(sales.displayBalance());
+				ui.output(vendingMachine.feedMoney(input));
+				ui.output(vendingMachine.displayBalance());
 					} else if (selection.equals(SUBMENU_OPTION_SELECT_PRODUCT)){
 				displayInventory();
 				String slotKey = ui.promptForString("Please make your selection (using the slot key): ");
-				vendingMachine.getTheItem(slotKey);
-				//user will input their selection
-				//---> if the customer balance = $0 return to submenu give error message --> deposit money, then make selection
-				//---> if the number of slots = 0 return to submenu
-				//---> costs more than they deposited then error message and send back to submenu
-				//selectProduct --> remove 1 from item.numberInSlot && subtract price from change balance
-				//return back to purchase menu
+				ui.output(vendingMachine.getTheItem(slotKey));
+				ui.output(vendingMachine.displayBalance());
+				//method here
 			} else if (selection.equals(SUBMENU_OPTION_FINISH_TRANSACTION)) {
 				//		finishTransaction();//return change balance && return to main menu
+				ui.output(vendingMachine.returnChange());
 				inSubmenu = false;
 			}
 		}
