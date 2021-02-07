@@ -11,7 +11,12 @@ public class Item {
     private String type;
     private int numberOfItemsInSlot = DEFAULT_NUMBER;
 
-    //Slot getter and setter
+    public BigDecimal getItemSales(){
+       int numberOfItemsSold = (DEFAULT_NUMBER - getNumberOfItemsInSlot());
+       BigDecimal itemSales = BigDecimal.valueOf(numberOfItemsSold).multiply(getPrice());
+       return itemSales;
+    }
+
     public String getSlot() {
         return slot;
     }
@@ -19,7 +24,6 @@ public class Item {
         this.slot = slot;
     }
 
-    //name getter and setter
     public String getName() {
         return name;
     }
@@ -27,7 +31,6 @@ public class Item {
         this.name = name;
     }
 
-    //price getter and setter
     public BigDecimal getPrice() {
         return price;
     }
@@ -35,7 +38,6 @@ public class Item {
         this.price = price;
     }
 
-    //type setter and getter
     public String getType() {
         return type;
     }
@@ -43,13 +45,11 @@ public class Item {
         this.type = type;
     }
 
-    //Number of Items in Slot setter and getter
     public int getNumberOfItemsInSlot() {
         return numberOfItemsInSlot;
     }
     public void setNumberOfItemsInSlot(int numberOfItemsInSlot) {
         this.numberOfItemsInSlot = numberOfItemsInSlot;
     }
-
 
 }

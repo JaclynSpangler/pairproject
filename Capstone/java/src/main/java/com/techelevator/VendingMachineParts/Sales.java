@@ -1,10 +1,8 @@
 package com.techelevator.VendingMachineParts;
 
-import com.techelevator.view.MenuDrivenCLI;
+import com.techelevator.util.VMLog;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Scanner;
 
 public class Sales {
 
@@ -19,7 +17,7 @@ public class Sales {
         this.vendingMachineBalance = vendingMachineBalance;
     }
 
-
+    public String getReturnChange(){ return returnChange();}
 
     public BigDecimal getCustomerBalance() {
         return customerBalance;
@@ -39,6 +37,10 @@ public class Sales {
             try {
                 BigDecimal inputDollar = new BigDecimal(amount);
                 setCustomerBalance(customerBalance.add(inputDollar));
+                String feedMoneyLog = " FEED MONEY : Input Amount: $" +
+                        inputDollar.toString() + " , Total Balance: $" +
+                        getCustomerBalance().toString();
+                VMLog.log(feedMoneyLog);
             } catch (NumberFormatException e) {
                 result = "Invalid Entry, Please enter a WHOLE DOLLAR amount.";
             }
@@ -47,11 +49,9 @@ public class Sales {
     }
     public String displayBalance(){
         String balanceDisplay = "";
-        balanceDisplay = "Your current balance is: $" + getCustomerBalance();
+        balanceDisplay = "Current Balance: $" + getCustomerBalance();
         return balanceDisplay;
     }
-//returnChange method :)
-
 
     public String returnChange(){
         String result = "";
@@ -66,6 +66,7 @@ public class Sales {
         int quartersCount = 0;
         int dimesCount = 0;
         int nickelsCount = 0;
+        String transactionCompleteLog = "";
 
         while(coinChangeDouble>0) {
             if(coinChangeDouble >= quarter){
@@ -78,11 +79,12 @@ public class Sales {
                 coinChangeDouble -= nickel;
                 nickelsCount++;
             }
-            result = "Your change is $" + dollarChange + ", " + quartersCount + " quarter(s), " + dimesCount + " dime(s), and " + nickelsCount + " nickel(s)!";
+            result = "Change Given: $" + dollarChange + ", " + quartersCount + " quarter(s), " + dimesCount + " dime(s), " + nickelsCount + " nickel(s)";
             setCustomerBalance(BigDecimal.ZERO);
+            transactionCompleteLog = " GIVE CHANGE: " + result + ", Remaining Balance: $" + getCustomerBalance();
+            VMLog.changeLog(transactionCompleteLog);
         }
             return result;
-        }
-
+    }
 
 }

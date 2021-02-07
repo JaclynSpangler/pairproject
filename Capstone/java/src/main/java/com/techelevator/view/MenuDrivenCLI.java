@@ -25,4 +25,7 @@ public class MenuDrivenCLI {
         System.out.println(prompt);
         return userInput.nextLine();
     }
+
+    // possibly write "promptForSlot" method that converts first character to uppercase
+
 }

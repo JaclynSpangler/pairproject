@@ -2,6 +2,7 @@ package com.techelevator;
 
 import com.techelevator.VendingMachineParts.Sales;
 import com.techelevator.VendingMachineParts.VendingMachine;
+import com.techelevator.util.VMLog;
 import com.techelevator.view.MenuDrivenCLI;
 
 public class Application {
@@ -10,7 +11,7 @@ public class Application {
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
 	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
 	private static final String MAIN_MENU_OPTION_EXIT = "Exit";
-	private static final String MAIN_MENU_OPTION_SALES_REPORT = "Sales Report";
+	private static final String MAIN_MENU_OPTION_SALES_REPORT = "";
 	private static final String[] MAIN_MENU_OPTIONS = {MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE,
 			MAIN_MENU_OPTION_EXIT, MAIN_MENU_OPTION_SALES_REPORT};
 
@@ -42,11 +43,9 @@ public class Application {
 			} else if (selection.equals(MAIN_MENU_OPTION_EXIT)) {
 				running = false;
 			} else if (selection.equals(MAIN_MENU_OPTION_SALES_REPORT)) {
-				///sales report :)
+				ui.output(vendingMachine.displaySales());
 			}
 		}
-
-
 	}
 
 	private void displayInventory(){
@@ -56,7 +55,6 @@ public class Application {
 
 	private void runSubmenu(){
 		boolean inSubmenu = true;
-
 
 		while(inSubmenu) {
 			String selection = ui.promptForSelection(SUBMENU_OPTIONS_PURCHASE);
@@ -69,10 +67,10 @@ public class Application {
 				String slotKey = ui.promptForString("Please make your selection (using the slot key): ");
 				ui.output(vendingMachine.getTheItem(slotKey));
 				ui.output(vendingMachine.displayBalance());
-				//method here
+
 			} else if (selection.equals(SUBMENU_OPTION_FINISH_TRANSACTION)) {
-				//		finishTransaction();//return change balance && return to main menu
 				ui.output(vendingMachine.returnChange());
+				VMLog.printChangeLogToAudit();
 				inSubmenu = false;
 			}
 		}
