@@ -3,6 +3,7 @@ package com.techelevator;
 import com.techelevator.VendingMachineParts.Sales;
 import com.techelevator.VendingMachineParts.VendingMachine;
 import com.techelevator.util.VMLog;
+import com.techelevator.view.Menu;
 import com.techelevator.view.MenuDrivenCLI;
 
 public class Application {
@@ -11,7 +12,7 @@ public class Application {
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
 	private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
 	private static final String MAIN_MENU_OPTION_EXIT = "Exit";
-	private static final String MAIN_MENU_OPTION_SALES_REPORT = "";
+	private static final String MAIN_MENU_OPTION_SALES_REPORT = Menu.HIDDEN_OPTION;
 	private static final String[] MAIN_MENU_OPTIONS = {MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE,
 			MAIN_MENU_OPTION_EXIT, MAIN_MENU_OPTION_SALES_REPORT};
 
@@ -70,7 +71,6 @@ public class Application {
 
 			} else if (selection.equals(SUBMENU_OPTION_FINISH_TRANSACTION)) {
 				ui.output(vendingMachine.returnChange());
-				VMLog.printChangeLogToAudit();
 				inSubmenu = false;
 			}
 		}

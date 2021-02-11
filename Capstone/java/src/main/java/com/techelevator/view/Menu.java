@@ -9,6 +9,7 @@ public class Menu {
 
 	private PrintWriter out;
 	private Scanner in;
+	public static final String HIDDEN_OPTION = "hide";
 
 	public Menu(InputStream input, OutputStream output) {
 		this.out = new PrintWriter(output);
@@ -45,9 +46,7 @@ public class Menu {
 		out.println();
 		for (int i = 0; i < options.length; i++) {
 			int optionNum = i + 1;
-			if (i + 1 == 4) {
-				out.println(options[i]);
-			} else {
+			if (!options[i].equals(HIDDEN_OPTION)) {
 				out.println(optionNum + ") " + options[i]);
 			}
 		}

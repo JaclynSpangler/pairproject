@@ -69,7 +69,7 @@ public class VendingMachine {
 
             if (slotKey.equals(slotKeyOfItemInLoop)) {
 
-                if (transactions.getCustomerBalance().equals(BigDecimal.ZERO) || transactions.getCustomerBalance().compareTo(itemInLoop.getPrice()) < 0) {
+                if (transactions.getCustomerBalance().compareTo(itemInLoop.getPrice()) < 0) {
                     result = "Sorry, You do not have enough funds, please deposit more funds.";
                 } else if (itemInLoop.getNumberOfItemsInSlot() == 0) {
                     result = "Item is SOLD OUT";

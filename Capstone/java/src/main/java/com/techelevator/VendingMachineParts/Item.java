@@ -13,8 +13,8 @@ public class Item {
 
     public BigDecimal getItemSales(){
        int numberOfItemsSold = (DEFAULT_NUMBER - getNumberOfItemsInSlot());
-       BigDecimal itemSales = BigDecimal.valueOf(numberOfItemsSold).multiply(getPrice());
-       return itemSales;
+        BigDecimal itemSales = BigDecimal.valueOf(numberOfItemsSold).multiply(getPrice());
+        return itemSales;
     }
 
     public String getSlot() {

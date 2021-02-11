@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class Sales {
 
-    private static final BigDecimal STARTING_BALANCE = BigDecimal.ZERO;
+    private static final BigDecimal STARTING_BALANCE = new BigDecimal("0.00");
     private BigDecimal customerBalance = STARTING_BALANCE; //change balance and whats being deposited
     private BigDecimal vendingMachineBalance = STARTING_BALANCE;
 
@@ -48,9 +48,7 @@ public class Sales {
         return result;
     }
     public String displayBalance(){
-        String balanceDisplay = "";
-        balanceDisplay = "Current Balance: $" + getCustomerBalance();
-        return balanceDisplay;
+       return "Current Balance: $" + getCustomerBalance();
     }
 
     public String returnChange(){
@@ -62,6 +60,7 @@ public class Sales {
 
         BigDecimal dollarChange = getCustomerBalance().divideToIntegralValue(dollar);
         BigDecimal coinChange = getCustomerBalance().subtract(dollarChange);
+
         double coinChangeDouble = coinChange.doubleValue();
         int quartersCount = 0;
         int dimesCount = 0;
@@ -79,11 +78,11 @@ public class Sales {
                 coinChangeDouble -= nickel;
                 nickelsCount++;
             }
-            result = "Change Given: $" + dollarChange + ", " + quartersCount + " quarter(s), " + dimesCount + " dime(s), " + nickelsCount + " nickel(s)";
-            setCustomerBalance(BigDecimal.ZERO);
-            transactionCompleteLog = " GIVE CHANGE: " + result + ", Remaining Balance: $" + getCustomerBalance();
-            VMLog.changeLog(transactionCompleteLog);
         }
+        result = "Change Given: $" + dollarChange + ", " + quartersCount + " quarter(s), " + dimesCount + " dime(s), " + nickelsCount + " nickel(s)";
+        setCustomerBalance(BigDecimal.ZERO);
+        transactionCompleteLog = " GIVE CHANGE: " + result + ", Remaining Balance: $" + getCustomerBalance();
+        VMLog.log(transactionCompleteLog);
             return result;
     }
 
