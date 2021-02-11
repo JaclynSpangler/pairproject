@@ -31,7 +31,7 @@ public class Sales {
     public String feedMoney(String amount) {
         String result = "";
 
-        if (amount.contains(".")) {
+        if (amount.contains(".") || amount.contains("-")) {
             result = "Invalid Entry, Please enter a WHOLE DOLLAR amount.";
         } else {
             try {
