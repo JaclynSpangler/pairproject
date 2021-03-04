@@ -1,12 +1,16 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.view.ConsoleService;
 import io.cucumber.java.bs.A;
+
+import java.util.List;
 
 public class App {
 
@@ -92,6 +96,12 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
+		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+
+		User[] users = transferService.getUsers();
+    	for (User user: users){
+    		System.out.println(user.getId() +" "+ user.getUsername());
+		}
 		// TODO Auto-generated method stub
 		
 	}

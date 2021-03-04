@@ -6,6 +6,7 @@ import com.techelevator.tenmo.model.User;
 import java.util.List;
 
 public interface TransferDAO {
+    List<User> listOfUsersToSend();
 //get list of users to send
     //send bucks
     //should include userId of the from and to users and amount

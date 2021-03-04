@@ -32,28 +32,30 @@ public class JdbcUserDAO implements UserDAO {
             return id;
         } else {
             return -1;
-    }
+        }
     }
 
     @Override
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, username, password_hash FROM users;";
+        String sql = "SELECT user_id, username, 'fake data' as password_hash FROM users;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        while(results.next()) {
-            User user = mapRowToUser(results);
+        while (results.next()) {
+            User user = mapRowToUserPartTwo(results);
             users.add(user);
+
         }
         return users;
     }
+
 
     @Override
     public User findByUsername(String username) throws UsernameNotFoundException {
         String sql = "SELECT user_id, username, password_hash FROM users WHERE username ILIKE ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, username);
-        if (rowSet.next()){
+        if (rowSet.next()) {
             return mapRowToUser(rowSet);
-            }
+        }
         throw new UsernameNotFoundException("User " + username + " was not found.");
     }
 
@@ -68,7 +70,7 @@ public class JdbcUserDAO implements UserDAO {
             newUserId = jdbcTemplate.queryForObject(sql, Integer.class, username, password_hash);
         } catch (DataAccessException e) {
             return false;
-                }
+        }
 
         // create account
         sql = "INSERT INTO accounts (user_id, balance) values(?, ?)";
@@ -89,5 +91,13 @@ public class JdbcUserDAO implements UserDAO {
         user.setActivated(true);
         user.setAuthorities("USER");
         return user;
+    }
+
+    private User mapRowToUserPartTwo(SqlRowSet rs) {
+        User user = new User();
+        user.setId(rs.getLong("user_id"));
+        user.setUsername(rs.getString("username"));
+        return user;
+
     }
 }
