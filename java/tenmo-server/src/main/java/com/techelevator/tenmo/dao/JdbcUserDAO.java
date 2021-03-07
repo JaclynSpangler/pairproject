@@ -38,15 +38,17 @@ public class JdbcUserDAO implements UserDAO {
     @Override
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, username, 'fake data' as password_hash FROM users;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-        while (results.next()) {
-            User user = mapRowToUserPartTwo(results);
-            users.add(user);
+        String sql = "select * from users";
 
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while(results.next()) {
+            User user = mapRowToUser(results);
+            users.add(user);
         }
+
         return users;
     }
+
 
 
     @Override
@@ -91,13 +93,5 @@ public class JdbcUserDAO implements UserDAO {
         user.setActivated(true);
         user.setAuthorities("USER");
         return user;
-    }
-
-    private User mapRowToUserPartTwo(SqlRowSet rs) {
-        User user = new User();
-        user.setId(rs.getLong("user_id"));
-        user.setUsername(rs.getString("username"));
-        return user;
-
     }
 }

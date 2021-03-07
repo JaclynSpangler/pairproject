@@ -26,7 +26,7 @@ public class AccountController {
 
     @RequestMapping(path = "/accounts/balance", method = RequestMethod.GET)
     public BigDecimal getAccountBalance(Principal principal) throws UsernameNotFoundException {
-        return accountDAO.getBalanceByUserId(Long.valueOf(userDAO.findIdByUsername(principal.getName())));
+        te
     }
 
 }

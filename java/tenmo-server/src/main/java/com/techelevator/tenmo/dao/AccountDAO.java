@@ -4,9 +4,18 @@ import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public interface AccountDAO {
 
-    BigDecimal getBalanceByUserId(Long userId);
+    User getUser();
+
+    BigDecimal getAccountBalance(int id);
+
+    BigDecimal addToBalance(BigDecimal amount, int accountTo);
+
+    BigDecimal subtractFromBalance(BigDecimal amount, int accountFrom);
+
+    Account findAccountById(int id);
+
 }
+

@@ -3,16 +3,17 @@ package com.techelevator.tenmo.dao;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-public interface TransferDAO {
-    List<User> listOfUsersToSend();
-//get list of users to send
-    //send bucks
-    //should include userId of the from and to users and amount
-    //receiver account balance increases
-    //sender accounts balance decreases
-    //sender cant send more than they have
-    //sender transfer -->approve
+public interface TransferDAO
+{
+    List<User> getUsers();
+
+    String createTransfer(int accountFrom, int accountTo, BigDecimal amount);
+
+    List<Transfer> getAllTransfers(int id);
+
+
 
 }

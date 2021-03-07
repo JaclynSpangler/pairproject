@@ -1,4 +1,4 @@
-package com.techelevator.tenmo.model;
+package com.techelevator.tenmo.models;
 
 import java.math.BigDecimal;
 
@@ -14,8 +14,26 @@ public class Transfer {
     private String transferType;
     private String usernameReceive;
     private String usernameSend;
-    private User user;
 
+    public Transfer()
+    {
+
+    }
+
+    public Transfer(int accountFrom, int accountTo, BigDecimal amount)
+    {
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.amount = amount;
+    }
+    public int getTransferId()
+    {
+        return transferId;
+    }
+    public void setTransferId(int transferId)
+    {
+        this.transferId = transferId;
+    }
     public int getTransferTypeId()
     {
         return transferTypeId;
@@ -88,14 +106,4 @@ public class Transfer {
     {
         this.usernameSend = usernameSend;
     }
-
-    public int getTransferId()
-    {
-        return transferId;
-    }
-    public void setTransferId(int transferId)
-    {
-        this.transferId = transferId;
-    }
 }
-

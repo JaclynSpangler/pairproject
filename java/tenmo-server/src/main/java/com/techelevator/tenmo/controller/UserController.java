@@ -22,10 +22,9 @@ public class UserController {
         this.accountDAO = accountDAO;
         this.userDAO = userDAO;
     }
-    @RequestMapping(path= "/users", method= RequestMethod.GET)
-    public List<User> getUserList(){
+
+    @RequestMapping(path = "/users", method = RequestMethod.GET)
+    public List<User> getUserList() {
         return userDAO.findAll();
     }
-
-
 }

@@ -77,7 +77,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
 		try{
-			System.out.println("Your Current Balance is: $"+ accountService.getAccountBalance());
+			System.out.println("Your Current Balance is: $"+ accountService.getAccountBalanceRequest());
 		}catch(Exception e){
 			System.out.println("Error :(" +  e.getMessage());
 		}
@@ -86,7 +86,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		{
+			TransferService viewAllTransfers = new TransferService(API_BASE_URL, currentUser);
+			viewAllTransfers.transfersList();
+
+		}
 		
 	}
 
@@ -98,12 +102,15 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void sendBucks() {
 		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
 
-		User[] users = transferService.getUsers();
-    	for (User user: users){
-    		System.out.println(user.getId() +" "+ user.getUsername());
+		try
+		{
+			transferService.sendMoney();
+
 		}
-		// TODO Auto-generated method stub
-		
+		catch (Exception e)
+		{
+			System.out.println("ERROR: " + e.getMessage());
+		}
 	}
 
 	private void requestBucks() {
