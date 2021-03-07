@@ -24,9 +24,12 @@ public class AccountController {
         this.userDAO = userDAO;
     }
 
-    @RequestMapping(path = "/accounts/balance", method = RequestMethod.GET)
-    public BigDecimal getAccountBalance(Principal principal) throws UsernameNotFoundException {
-        te
-    }
+    @RequestMapping(value = "/accounts/{id}/balance", method = RequestMethod.GET)
+    public BigDecimal getAccountBalance(@PathVariable int id)
+    {
 
+        BigDecimal balance = accountDAO.getAccountBalance(id);
+
+        return balance;
+    }
 }

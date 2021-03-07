@@ -34,7 +34,6 @@ public class AccountService {
             accounts.setBalance(balance);
             return accounts.getBalance();
 
-//			System.out.println("Here is your balance: $" + accounts.getBalance());
 
         } catch (RestClientResponseException ex)
         {

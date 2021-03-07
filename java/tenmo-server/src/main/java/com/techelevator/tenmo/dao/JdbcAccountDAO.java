@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JdbcAccountDAO implements AccountDAO {
+public class JdbcAccountDAO implements AccountDAO
+{
     private JdbcTemplate jdbcTemplate;
     private UserDAO userDAO;
     private User user;
@@ -21,14 +22,10 @@ public class JdbcAccountDAO implements AccountDAO {
     public JdbcAccountDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     public User getUser()
     {
         return user;
-    }
-
-    @Override
-    public BigDecimal getAccountBalance(int id) {
-        return null;
     }
 
     public BigDecimal getBalance()
@@ -38,26 +35,13 @@ public class JdbcAccountDAO implements AccountDAO {
 
 
     @Override
-    public BigDecimal getBalanceByUserId(Long userId) {
-
-        User user = new User();
-        String sql = "SELECT balance " +
-                "FROM accounts " +
-                "WHERE user_id = ?";
-
-        return jdbcTemplate.queryForObject(sql, BigDecimal.class, userId);
-
+    public BigDecimal getAccountBalance(int id) {
+        return jdbcTemplate.queryForObject("SELECT balance" + "FROM accounts" + "WHERE user_id = ?;",
+                BigDecimal.class, id);
     }
-    @Override
-    public Account getAccountByUserId(Long userId){
-        Account account = null;
-        String sql = "SELECT account_id, user_id, balance FROM accounts WHERE user_id = ?";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
-        while(results.next()){
-            account = mapRowToAccount(results);
-        }
-        return account;
-    }
+
+
+
 
 
     @Override
