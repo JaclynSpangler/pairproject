@@ -77,7 +77,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
 		try{
-			System.out.println("Your Current Balance is: $"+ accountService.getAccountBalanceRequest());
+			System.out.println("Your Current Balance is: $"+ accountService.getBalance());
 		}catch(Exception e){
 			System.out.println("Error :(" +  e.getMessage());
 		}

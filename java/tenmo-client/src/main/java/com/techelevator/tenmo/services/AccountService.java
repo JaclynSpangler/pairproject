@@ -5,6 +5,7 @@ import com.techelevator.tenmo.models.AuthenticatedUser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,24 +23,15 @@ public class AccountService {
         this.currentUser= currentUser;
     }
 
-    public BigDecimal getAccountBalanceRequest()
-    {
-        Accounts accounts = new Accounts();
-
-        try
-        {
-            BigDecimal balance = restTemplate.exchange(BASE_URL + "/" + currentUser.getUser().getId() + "/balance",
-                    HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
-
-            accounts.setBalance(balance);
-            return accounts.getBalance();
-
-
-        } catch (RestClientResponseException ex)
-        {
-            System.err.println("Sorry, that didn't go as planned!");
+    public BigDecimal getBalance() {
+        BigDecimal balance = new BigDecimal(1000);
+        try {
+            balance = restTemplate.exchange(BASE_URL + "balance/" + currentUser.getUser().getId(), HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+            System.out.println("Your current account balance is: $" + balance);
+        } catch (RestClientException e) {
+            System.out.println("Error getting balance");
         }
-        return accounts.getBalance();
+        return balance;
     }
 
     private HttpEntity makeAuthEntity(){

@@ -77,7 +77,7 @@ public class TransferService {
             transfer.setAccountTo(selectedId);
 
             BigDecimal balance = new BigDecimal(0.00);
-            balance = accountService.getAccountBalanceRequest();
+            balance = accountService.getBalance();
             accounts.setBalance(balance);
 
             if (accounts.getBalance().subtract(amountToSend).compareTo(BigDecimal.ZERO)> 0) {
