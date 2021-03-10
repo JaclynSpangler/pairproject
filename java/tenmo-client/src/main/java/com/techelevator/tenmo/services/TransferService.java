@@ -33,9 +33,9 @@ public class TransferService {
         try {
             output = restTemplate.exchange(BASE_SERVICE_URL + "/" + currentUser.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("-------------------------------------------\r\n" +
-                    "Transfers\r\n" +
-                    "ID          From/To                 Amount\r\n" +
-                    "-------------------------------------------\r\n");
+                    "Transfers " +
+                    "ID          From/To                 Amount " +
+                    "------------------------------------------- ");
             String fromOrTo = "";
             String name = "";
             for (Transfer transfer : output) {
@@ -49,24 +49,24 @@ public class TransferService {
                 System.out.println(transfer.getTransferId() + " " + fromOrTo + name + " $" + transfer.getAmount());
             }
             System.out.print("-------------------------------------------\r\n" +
-                    "Please enter transfer ID to view details (0 to cancel): ");
+                    "Please enter transfer ID to view details: ");
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
             if (Integer.parseInt(input) != 0) {
                 boolean foundTransferId = false;
                 for (Transfer transfer : output) {
                     if (Integer.parseInt(input) == transfer.getTransferId()) {
-                        Transfer temp = restTemplate.exchange(BASE_SERVICE_URL + "transfers/" + transfer.getTransferId(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+                        Transfer body = restTemplate.exchange(BASE_SERVICE_URL + "/" + transfer.getTransferId(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
                         foundTransferId = true;
                         System.out.println("--------------------------------------------" +
                                 "Transfer Details" +
                                 "--------------------------------------------" +
-                                " Id: " + temp.getTransferId() + " " +
-                                " From: " + temp.getUserFrom() + " " +
-                                " To: " + temp.getUserTo() + " " +
-                                " Type: " + temp.getTransferType() + " " +
-                                " Status: " + temp.getTransferStatus() + " " +
-                                " Amount: $" + temp.getAmount());
+                                " Id: " + body.getTransferId() + " " +
+                                " From: " + body.getUserFrom() + " " +
+                                " To: " + body.getUserTo() + " " +
+                                " Type: " + body.getTransferType() + " " +
+                                " Status: " + body.getTransferStatus() + " " +
+                                " Amount: $" + body.getAmount());
                     }
                 }
             }
