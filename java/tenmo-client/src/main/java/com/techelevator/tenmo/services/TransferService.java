@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,56 +29,23 @@ public class TransferService {
         ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.POST, makeAuthEntity(), Transfer.class);
         return response.getBody();
     }
-    public Transfer[] transfersList() {
-        Transfer[] output = null;
-        try {
-            output = restTemplate.exchange(BASE_SERVICE_URL + "/all", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
-            System.out.println("-------------------------------------------\r\n" +
-                    "Transfers " +
-                    "ID          From/To                 Amount " +
-                    "------------------------------------------- ");
-            String fromOrTo = "";
-            String name = "";
-            for (Transfer transfer : output) {
-                if (currentUser.getUser().getId() == transfer.getAccount_from()) {
-                    fromOrTo = "From: ";
-                    name = transfer.getUserTo();
-                } else {
-                    fromOrTo = "To: ";
-                    name = transfer.getUserFrom();
-                }
-                System.out.println(transfer.getTransferId() + " " + fromOrTo + name + " $" + transfer.getAmount());
-            }
-            System.out.print("-------------------------------------------\r\n" +
-                    "Please enter transfer ID to view details: ");
-            Scanner scanner = new Scanner(System.in);
-            String input = scanner.nextLine();
-            if (Integer.parseInt(input) != 0) {
-                boolean foundTransferId = false;
-                for (Transfer transfer : output) {
-                    if (Integer.parseInt(input) == transfer.getTransferId()) {
-                        Transfer body = restTemplate.exchange(BASE_SERVICE_URL + "/" + transfer.getTransferId(), HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
-                        foundTransferId = true;
-                        System.out.println("--------------------------------------------" +
-                                "Transfer Details" +
-                                "--------------------------------------------" +
-                                " Id: " + body.getTransferId() + " " +
-                                " From: " + body.getUserFrom() + " " +
-                                " To: " + body.getUserTo() + " " +
-                                " Type: " + body.getTransferType() + " " +
-                                " Status: " + body.getTransferStatus() + " " +
-                                " Amount: $" + body.getAmount());
-                    }
-                }
-            }
 
-        } catch (Exception e) {
-          System.out.println("Error :(");
-        }
+    public Transfer[] transfersList(String authToken) {
+        Transfer[] output = null;
+        HttpEntity<?> entity = new HttpEntity<>(authHeaders(authToken));
+        output = restTemplate.exchange(BASE_SERVICE_URL + "/all", HttpMethod.GET, entity, Transfer[].class).getBody();
         return output;
     }
 
-//    public Transfer getUsers() {
+
+    public Transfer transferDetails(String authTokn, int transferId) {
+        Transfer transfer = new Transfer();
+        HttpEntity<?> entity = new HttpEntity<>(authHeaders(authTokn));
+        transfer = restTemplate.exchange(BASE_SERVICE_URL + "/" + transfer.getTransferId() + "/details", HttpMethod.GET, entity, Transfer.class).getBody();
+        return transfer;
+    }
+
+    //    public Transfer getUsers() {
 //        HttpEntity<?> entity = new HttpEntity<>(makeAuthEntity());
 //        ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.GET, entity, Transfer.class);
 //        return response.getBody();
@@ -88,4 +56,11 @@ public class TransferService {
         HttpEntity entity = new HttpEntity(headers);
         return entity;
     }
+
+    private HttpHeaders authHeaders(String authToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        return headers;
+    }
+
 }

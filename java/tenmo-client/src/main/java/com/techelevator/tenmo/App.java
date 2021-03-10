@@ -105,8 +105,14 @@ public class App {
 
 
 	private void viewTransferHistory() {
+		showTransfers();
 		TransferService ts = new TransferService(API_BASE_URL);
-		ts.transfersList();
+		ts.transfersList(currentUser.getToken());
+		int details =console.getUserInputInteger("Enter the Transfer ID for details: ");
+		if(details !=0){
+			Transfer transfer= ts.transferDetails(currentUser.getToken(), details);
+			showTransferDetails(transfer);
+		}
 
 	}
 
@@ -220,6 +226,37 @@ public class App {
 
 		System.out.println("---------");
 		System.out.println("         ");
+	}
+	private void showTransfers(){
+		System.out.println("-------------------------------------------\n" +
+				"Transfers \n" +
+				"ID          From/To                 Amount \n" +
+				"------------------------------------------- \n");
+		Transfer[] getTransfers= transferService.transfersList(currentUser.getToken());
+		for(Transfer transfer: getTransfers){
+			String fromOrTo = "";
+			String name = "";
+				if (currentUser.getUser().getId() == transfer.getUserFrom()) {
+					fromOrTo = "From: ";
+					name = currentUser.getUser().getUsername();
+				} else {
+					fromOrTo = "To: ";
+					name = String.valueOf(transfer.getUserTo());
+				}
+				System.out.println(transfer.getTransferId() + " " + fromOrTo+ " $" + transfer.getAmount());
+				System.out.println("------------------------------------------- ");
+		}
+	}
+	private void showTransferDetails(Transfer transfer){
+		System.out.println("--------------------------------------------\n" +
+				"Transfer Details\n" +
+				"--------------------------------------------\n" +
+				" Id: " + transfer.getTransferId() + " \n" +
+				" From: " + transfer.getUserFrom() + " \n" +
+				" To: " + transfer.getUserTo() + " \n" +
+				" Type: " + transfer.getTransferType() + " \n" +
+				" Status: " + transfer.getTransferStatus() + " \n" +
+				" Amount: $" + transfer.getAmount() + " \n");
 	}
 
 }

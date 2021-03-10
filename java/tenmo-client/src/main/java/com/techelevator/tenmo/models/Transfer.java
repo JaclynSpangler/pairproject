@@ -11,19 +11,19 @@ public class Transfer {
     private BigDecimal amount;
     private String transferType;
     private String transferStatus;
-    private String userFrom;
-    private String userTo;
+    private int userFrom;
+    private int userTo;
 
-    public String getUserFrom() {
+    public int getUserFrom() {
         return userFrom;
     }
-    public void setUserFrom(String userFrom) {
+    public void setUserFrom(int userFrom) {
         this.userFrom = userFrom;
     }
-    public String getUserTo() {
+    public int getUserTo() {
         return userTo;
     }
-    public void setUserTo(String userTo) {
+    public void setUserTo(int userTo) {
         this.userTo = userTo;
     }
     public String getTransferType() {

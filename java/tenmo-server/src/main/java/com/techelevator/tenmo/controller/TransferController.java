@@ -36,7 +36,12 @@ public class TransferController {
 //
 //    }
 
-    @RequestMapping(value = "/transfers", method = RequestMethod.POST)
+    @RequestMapping(path= "/transfers/{transferId}/details", method = RequestMethod.GET)
+    public Transfer getTransferDetails(@PathVariable int transferId){
+        return getTransferDetails(transferId);
+    }
+
+    @RequestMapping(path = "/transfers", method = RequestMethod.POST)
     public Transfer initiateNewTransfer(@RequestBody TransferDTO transferDTO, Principal principal) {
         Transfer pendingTransfer = null;
         pendingTransfer = transferDAO.initiateTransfer(transferDTO, principal);
@@ -45,12 +50,12 @@ public class TransferController {
     }
 
     //updates both accounts from the transfer
-    @RequestMapping(value = "/transfers", method = RequestMethod.PUT)
+    @RequestMapping(path = "/transfers", method = RequestMethod.PUT)
     public void makeTransfer(@RequestBody Transfer transfer) {
         transferDAO.updateBalances(transfer);
     }
 
-    @RequestMapping(value = "/transfers/all", method = RequestMethod.GET)
+    @RequestMapping(path = "/transfers/all", method = RequestMethod.GET)
     public List<Transfer> getAllMyTransfers(Principal principal) {
         List<Transfer> output = transferDAO.findAll(userDAO.findIdByUsername(principal.getName()));
         return output;

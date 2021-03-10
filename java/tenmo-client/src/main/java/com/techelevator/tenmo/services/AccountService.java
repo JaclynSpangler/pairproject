@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import java.math.BigDecimal;
 
+import com.techelevator.tenmo.models.AuthenticatedUser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,6 +13,7 @@ public class AccountService {
 
     private final String BASE_SERVICE_URL;
     private RestTemplate restTemplate = new RestTemplate();
+    private AuthenticatedUser currentUser;
 
     public AccountService(String baseUrl) {
         this.BASE_SERVICE_URL = baseUrl + "account/";

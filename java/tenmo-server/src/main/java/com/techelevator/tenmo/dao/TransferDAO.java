@@ -19,7 +19,7 @@ public interface TransferDAO {
 
     List<Transfer> findAll(int userId);
     int getAccountIdByUserId(int userId);
-
+    Transfer transferDetails(int transferId);
 
 
 
