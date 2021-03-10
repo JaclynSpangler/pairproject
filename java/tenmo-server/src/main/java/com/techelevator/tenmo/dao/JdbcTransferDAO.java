@@ -2,6 +2,8 @@ package com.techelevator.tenmo.dao;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
@@ -16,6 +18,9 @@ public class JdbcTransferDAO implements TransferDAO {
 
     private JdbcTemplate jdbcTemplate;
     private UserDAO userDAO;
+    private int TRANSFER_TYPE_SEND = 2;
+    private int TRANSFER_STATUS_APPROVED= 2;
+    private int TRANSFER_STATUS_PENDING =1;
 
     public JdbcTransferDAO(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
         this.jdbcTemplate = jdbcTemplate;
@@ -31,7 +36,7 @@ public class JdbcTransferDAO implements TransferDAO {
                 "WHERE accounts.account_id = 2;";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlBalanceString, transfer.getAccount_from());
         BigDecimal amountToTransfer = transfer.getAmount();
-        BigDecimal stringInt = BigDecimal(sqlBalanceString);
+        BigDecimal stringInt =new BigDecimal(sqlBalanceString);
         if (amountToTransfer.compareTo(stringInt) == -1) {
             initiateTransfer(transferDTO, principal);
         }
@@ -40,21 +45,15 @@ public class JdbcTransferDAO implements TransferDAO {
 
     }
 
-
-    private BigDecimal BigDecimal(String sqlBalanceString) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public Transfer initiateTransfer(TransferDTO transferDTO, Principal principal) {
         Transfer transfer = mapDtoToTransfer(transferDTO, principal);
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from,account_to, amount)"
-                + "VALUES (2,1,?,?,?) RETURNING *;";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, transfer.getAccount_from(), transfer.getAccount_to(),
+                + "VALUES (?,?,?,?,?) ";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, TRANSFER_TYPE_SEND, TRANSFER_STATUS_PENDING, transfer.getAccount_from(), transfer.getAccount_to(),
                 transfer.getAmount());
-        while (rs.next()) {
-            transfer = mapRowToTransfer(rs);
+        while (results.next()) {
+            transfer = mapRowToTransfer(results);
         }
         return transfer;
     }
@@ -62,7 +61,7 @@ public class JdbcTransferDAO implements TransferDAO {
     @Override
     public boolean updateBalances(Transfer transfer) {
         boolean result = false;
-        String sql = "BEGIN TRANSACTION; UPDATE accounts "
+        String sql = "UPDATE accounts "
                 + "SET balance = balance + (SELECT amount FROM transfers WHERE transfer_id = ? AND transfer_status_id = 1) "
                 + "WHERE account_id = (SELECT account_to FROM transfers WHERE transfer_id = ? AND transfer_status_id = 1); "
                 + "UPDATE accounts "
@@ -80,6 +79,26 @@ public class JdbcTransferDAO implements TransferDAO {
         return result;
     }
     @Override
+    public List<Transfer> findAll(int userId){
+        List<Transfer> transfers = new ArrayList<>();
+        String sql= "\"SELECT t.*, u.username AS userFrom, v.username AS userTo FROM transfers t " +
+                "JOIN accounts a ON t.account_from = a.account_id " +
+                "JOIN accounts b ON t.account_to = b.account_id " +
+                "JOIN users u ON a.user_id = u.user_id " +
+                "JOIN users v ON b.user_id = v.user_id " +
+                "WHERE a.user_id = ? OR b.user_id = ?";
+
+
+
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, userId);
+        while(results.next()){
+            Transfer transfer= mapRowToTransfer(results);
+            transfers.add(transfer);
+        }
+        return transfers;
+    }
+    @Override
     public int getAccountIdByUserId(int userId){
 
         String sql = "SELECT account_id "+
@@ -91,11 +110,10 @@ public class JdbcTransferDAO implements TransferDAO {
 
 
     }
-    @Override
-    public Transfer mapDtoToTransfer(TransferDTO transferDTO, Principal principal){
+    private Transfer mapDtoToTransfer(TransferDTO transferDTO, Principal principal){
         Transfer transfer= new Transfer();
-        transfer.setTransfer_type_id(2);
-        transfer.setTransfer_status_id(2);
+        transfer.setTransfer_type_id(TRANSFER_TYPE_SEND);
+        transfer.setTransfer_status_id(TRANSFER_STATUS_APPROVED);
         transfer.setAccount_from(getAccountIdByUserId(userDAO.findIdByUsername(principal.getName())));
         transfer.setAccount_to(getAccountIdByUserId(transferDTO.getAccount_to()));
         transfer.setAmount(transferDTO.getAmount());

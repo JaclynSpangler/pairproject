@@ -5,6 +5,7 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferDTO;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface TransferDAO {
 
@@ -15,8 +16,10 @@ public interface TransferDAO {
     boolean updateBalances(Transfer transfer);
 
     void preTransfer(TransferDTO transferDTO, Principal principal);
+
+    List<Transfer> findAll(int userId);
     int getAccountIdByUserId(int userId);
-    Transfer mapDtoToTransfer(TransferDTO transferDTO, Principal principal);
+
 
 
 

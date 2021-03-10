@@ -7,10 +7,7 @@ import java.util.List;
 
 import com.techelevator.tenmo.model.TransferDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDAO;
@@ -30,16 +27,16 @@ public class TransferController {
         this.transferDAO = transferDAO;
     }
 
-    @RequestMapping(path = "account/transfers", method = RequestMethod.GET)
-    public void getTransfers(Principal principal) {
+//    @RequestMapping(path = "/transfers", method = RequestMethod.GET)
+//    public void getTransfers(Principal principal) {
+//
+//        int userId = accountController.getCurrentUserId(principal);
+//
+//        transfer.setAccount_from(userId);
+//
+//    }
 
-        long hello = accountController.getCurrentUserId(principal);
-        int helloInt = (int)hello;
-        transfer.setAccount_from(helloInt);
-
-    }
-
-    @RequestMapping(value = "account/transfers", method = RequestMethod.POST)
+    @RequestMapping(value = "/transfers", method = RequestMethod.POST)
     public Transfer initiateNewTransfer(@RequestBody TransferDTO transferDTO, Principal principal) {
         Transfer pendingTransfer = null;
         pendingTransfer = transferDAO.initiateTransfer(transferDTO, principal);
@@ -48,9 +45,17 @@ public class TransferController {
     }
 
     //updates both accounts from the transfer
-    @RequestMapping(value = "account/transfers", method = RequestMethod.PUT)
+    @RequestMapping(value = "/transfers", method = RequestMethod.PUT)
     public void makeTransfer(@RequestBody Transfer transfer) {
         transferDAO.updateBalances(transfer);
     }
+
+    @RequestMapping(value = "/transfers/{userId}", method = RequestMethod.GET)
+    public List<Transfer> getAllMyTransfers(@PathVariable int id) {
+        List<Transfer> output = transferDAO.findAll(id);
+        return output;
+    }
+
+
 
 }

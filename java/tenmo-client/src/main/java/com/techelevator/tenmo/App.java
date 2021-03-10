@@ -105,7 +105,8 @@ public class App {
 
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		TransferService ts = new TransferService(API_BASE_URL);
+		ts.transfersList();
 
 	}
 
@@ -120,8 +121,8 @@ public class App {
 		if (toUserId != 0) {
 			int amount = console.getUserInputInteger("Enter amount");
 			BigDecimal amountBD = new BigDecimal(amount);
-			Transfer transfer = new Transfer(amountBD, toUserId);
-			transferService.createTransfer(transfer, currentUser.getToken());
+			Transfer transfer = new Transfer();
+			transferService.createTransfer(transfer);
 			System.out.println(amount + " TE Bucks were sent to user " + toUserId);
 		} else {
 			System.out.println("Cancelling transfer...");
