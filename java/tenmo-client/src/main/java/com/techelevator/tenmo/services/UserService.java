@@ -1,6 +1,6 @@
 package com.techelevator.tenmo.services;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -8,18 +8,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class AccountService {
+import com.techelevator.tenmo.models.User;
+
+public class UserService {
 
     private final String BASE_SERVICE_URL;
     private RestTemplate restTemplate = new RestTemplate();
 
-    public AccountService(String baseUrl) {
-        this.BASE_SERVICE_URL = baseUrl + "account/";
+
+    public UserService(String baseUrl) {
+        this.BASE_SERVICE_URL = baseUrl + "account/allaccounts";
     }
 
-    public BigDecimal getBalance(String authToken) {
+    public User[] getUsers(String authToken) {
         HttpEntity<?> entity = new HttpEntity<>(authHeaders(authToken));
-        ResponseEntity<BigDecimal> response = restTemplate.exchange(BASE_SERVICE_URL + "balance", HttpMethod.GET, entity, BigDecimal.class);
+        ResponseEntity<User[]> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.GET, entity, User[].class);
         return response.getBody();
     }
 

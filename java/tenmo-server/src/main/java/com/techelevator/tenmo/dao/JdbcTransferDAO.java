@@ -1,135 +1,87 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.SQL;
+import java.math.BigDecimal;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import com.techelevator.tenmo.model.Transfer;
 
-@Component
-public class JdbcTransferDAO implements TransferDAO{
+@Service
+public class JdbcTransferDAO implements TransferDAO {
 
-
-    @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private AccountDAO accountDAO;
-    @Autowired
-    private UserDAO userDAO;
 
-
-    public JdbcTransferDAO(JdbcTemplate jdbcTemplate)
-    {
+    public JdbcTransferDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public List<User> getUsers()
-    {
-        List<User> users = new ArrayList<User>();
-        String sql = "SELECT user_id" +
-                "        ,username" +
-                "FROM users;";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql);
-
-        while (rows.next())
-        {
-            User user = mapRowToUser(rows);
-            users.add(user);
+    public void preTransfer(Transfer transfer) {
+        String sqlBalanceString = "SELECT balance\r\n" +
+                "FROM accounts\r\n" +
+                "JOIN transfers ON accounts.account_id = transfers.account_from\r\n" +
+                "WHERE accounts.account_id = 2;";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlBalanceString, transfer.getAccount_from());
+        BigDecimal amountToTransfer = transfer.getAmount();
+        BigDecimal stringInt = BigDecimal(sqlBalanceString);
+        if (amountToTransfer.compareTo(stringInt) == -1) {
+            initiateTransfer(transfer);
         }
+        System.out.println("Not enough funds. Rejected : " + transfer.getTransfer_status_id());
 
-        return users;
+
+    }
+
+
+    private BigDecimal BigDecimal(String sqlBalanceString) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public String createTransfer(int accountFrom, int accountTo, BigDecimal amount)
-    {
-        String sql = "INSERT INTO transfers" +
-                "(" +
-                "        transfer_type_id" +
-                "        , transfer_status_id" +
-                "        , account_from" +
-                "        , account_to" +
-                "        , amount" +
-                ")" +
-                "VALUES" +
-                "(" +
-                "        2" +
-                "        , 2" +
-                "        , ?" +
-                "        , ?" +
-                "        , ?" +
-                ");";
+    public Transfer initiateTransfer(Transfer transfer) {
 
-        jdbcTemplate.update(sql, accountFrom, accountTo, amount);
-
-        accountDAO.addToBalance(amount, accountTo);
-        accountDAO.subtractFromBalance(amount, accountFrom);
-
-        return "Transfer Complete!!!";
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from,account_to, amount)"
+                + "VALUES (2,1,?,?,?) RETURNING *;";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, transfer.getAccount_from(), transfer.getAccount_to(),
+                transfer.getAmount());
+        while (rs.next()) {
+            transfer = mapRowToTransfer(rs);
+        }
+        return transfer;
     }
 
     @Override
-    public List<Transfer> getAllTransfers(int userId)
-    {
-        List<Transfer> allTransfers = new ArrayList<>();
-
-        String sql = "SELECT t.*" +
-                "        , u.username AS user_from" +
-                "        , us.username AS user_to" +
-                "FROM transfers AS t" +
-                "INNER JOIN accounts AS a" +
-                "        ON t.account_from = a.account_id" +
-                "INNER JOIN accounts AS ac" +
-                "        ON t.account_to = ac.account_id" +
-                "INNER JOIN users AS u" +
-                "        ON a.user_id = u.user_id" +
-                "INNER JOIN users AS us" +
-                "        ON ac.user_id = us.user_id" +
-                "WHERE a.user_id = ?" +
-                "        OR ac.user_id = ?;";
-
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, userId, userId);
-
-        while (rows.next())
-        {
-            Transfer transfer = mapRowToTransfer(rows);
-            allTransfers.add(transfer);
+    public boolean updateBalances(Transfer transfer) {
+        boolean result = false;
+        String sql = "BEGIN TRANSACTION; UPDATE accounts "
+                + "SET balance = balance + (SELECT amount FROM transfers WHERE transfer_id = ? AND transfer_status_id = 1) "
+                + "WHERE account_id = (SELECT account_to FROM transfers WHERE transfer_id = ? AND transfer_status_id = 1); "
+                + "UPDATE accounts "
+                + "SET balance = balance - (SELECT amount FROM transfers WHERE transfer_id = ? AND transfer_status_id = 1) "
+                + "WHERE account_id = (SELECT account_from FROM transfers WHERE transfer_id = ? AND transfer_status_id = 1); "
+                + "UPDATE transfers "
+                + "SET transfer_status_id = 2"
+                + " WHERE transfer_id = ?;"
+                + " COMMIT;";
+        int updatedCount = jdbcTemplate.update(sql, transfer.getTransfer_id(), transfer.getTransfer_id(),
+                transfer.getTransfer_id(), transfer.getTransfer_id(), transfer.getTransfer_id());
+        if (updatedCount == 3) {
+            result = true;
         }
-
-        return allTransfers;
+        return result;
     }
 
-    private User mapRowToUser(SqlRowSet rs)
-    {
-        User user = new User();
-
-        user.setId(rs.getLong("user_id"));
-        user.setUsername(rs.getString("username"));
-        user.setPassword(rs.getString("password_hash"));
-        user.setActivated(true);
-        user.setAuthorities("ROLE_USER");
-
-        return user;
-    }
-
-    private Transfer mapRowToTransfer(SqlRowSet rs)
-    {
+    private Transfer mapRowToTransfer(SqlRowSet rs) {
         Transfer transfer = new Transfer();
-
-        transfer.setTransferId(rs.getInt("transfer_id"));
-        transfer.setTransferTypeId(rs.getInt("transfer_type_id"));
-        transfer.setTransferStatusId(rs.getInt("transfer_status_id"));
-        transfer.setAccountFrom(rs.getInt("account_from"));
-        transfer.setAccountTo(rs.getInt("account_to"));
+        transfer.setTransfer_id(rs.getInt("transfer_id"));
+        transfer.setTransfer_type_id(rs.getInt("transfer_type_id"));
+        transfer.setTransfer_status_id(rs.getInt("transfer_status_id"));
+        transfer.setAccount_from(rs.getInt("account_from"));
+        transfer.setAccount_to(rs.getInt("account_to"));
         transfer.setAmount(rs.getBigDecimal("amount"));
-
         return transfer;
     }
 

@@ -1,23 +1,22 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.User;
-import org.springframework.dao.DataAccessException;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
+import com.techelevator.tenmo.model.User;
 
-@Component
+@Service
 public class JdbcUserDAO implements UserDAO {
 
-    private static final BigDecimal STARTING_BALANCE = new BigDecimal("1000.00");
+    private static final double STARTING_BALANCE = 1000;
     private JdbcTemplate jdbcTemplate;
 
     public JdbcUserDAO(JdbcTemplate jdbcTemplate) {
@@ -26,13 +25,7 @@ public class JdbcUserDAO implements UserDAO {
 
     @Override
     public int findIdByUsername(String username) {
-        String sql = "SELECT user_id FROM users WHERE username ILIKE ?;";
-        Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
-        if (id != null) {
-            return id;
-        } else {
-            return -1;
-        }
+        return jdbcTemplate.queryForObject("select user_id from users where username = ?", int.class, username);
     }
 
     @Override
@@ -49,40 +42,41 @@ public class JdbcUserDAO implements UserDAO {
         return users;
     }
 
-
-
     @Override
     public User findByUsername(String username) throws UsernameNotFoundException {
-        String sql = "SELECT user_id, username, password_hash FROM users WHERE username ILIKE ?;";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, username);
-        if (rowSet.next()) {
-            return mapRowToUser(rowSet);
+        for (User user : this.findAll()) {
+            if( user.getUsername().toLowerCase().equals(username.toLowerCase())) {
+                return user;
+            }
         }
         throw new UsernameNotFoundException("User " + username + " was not found.");
     }
 
     @Override
     public boolean create(String username, String password) {
+        boolean userCreated = false;
+        boolean accountCreated = false;
 
         // create user
-        String sql = "INSERT INTO users (username, password_hash) VALUES (?, ?) RETURNING user_id";
+        String insertUser = "insert into users (username,password_hash) values(?,?)";
         String password_hash = new BCryptPasswordEncoder().encode(password);
-        Integer newUserId;
-        try {
-            newUserId = jdbcTemplate.queryForObject(sql, Integer.class, username, password_hash);
-        } catch (DataAccessException e) {
-            return false;
-        }
+
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        String id_column = "user_id";
+        userCreated = jdbcTemplate.update(con -> {
+                    PreparedStatement ps = con.prepareStatement(insertUser, new String[]{id_column});
+                    ps.setString(1, username);
+                    ps.setString(2,password_hash);
+                    return ps;
+                }
+                , keyHolder) == 1;
+        int newUserId = (int) keyHolder.getKeys().get(id_column);
 
         // create account
-        sql = "INSERT INTO accounts (user_id, balance) values(?, ?)";
-        try {
-            jdbcTemplate.update(sql, newUserId, STARTING_BALANCE);
-        } catch (DataAccessException e) {
-            return false;
-        }
+        String insertAccount = "insert into accounts (user_id,balance) values(?,?)";
+        accountCreated = jdbcTemplate.update(insertAccount,newUserId,STARTING_BALANCE) == 1;
 
-        return true;
+        return userCreated && accountCreated;
     }
 
     private User mapRowToUser(SqlRowSet rs) {
@@ -91,7 +85,9 @@ public class JdbcUserDAO implements UserDAO {
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password_hash"));
         user.setActivated(true);
-        user.setAuthorities("USER");
+        user.setAuthorities("ROLE_USER");
         return user;
     }
+
+
 }

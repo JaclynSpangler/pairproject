@@ -1,23 +1,32 @@
 package com.techelevator.tenmo;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Scanner;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
+
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
-import io.cucumber.java.bs.A;
-
-import java.util.List;
 
 public class App {
 
-private static final String API_BASE_URL = "http://localhost:8080/";
-    
-    private static final String MENU_OPTION_EXIT = "Exit";
-    private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
+
+	private static final String API_BASE_URL = "http://localhost:8080/";
+
+	private static final String MENU_OPTION_EXIT = "Exit";
+	private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
 	private static final String LOGIN_MENU_OPTION_LOGIN = "Login";
 	private static final String[] LOGIN_MENU_OPTIONS = { LOGIN_MENU_OPTION_REGISTER, LOGIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
 	private static final String MAIN_MENU_OPTION_VIEW_BALANCE = "View your current balance";
@@ -27,26 +36,39 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
-	
-    private AuthenticatedUser currentUser;
-    private ConsoleService console;
-    private AuthenticationService authenticationService;
 
-    public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
-    	app.run();
-    }
+	private static final String AUTH_TOKEN = "";
 
-    public App(ConsoleService console, AuthenticationService authenticationService) {
+	public RestTemplate restTemplate = new RestTemplate();
+	private AuthenticatedUser currentUser;
+	private ConsoleService console;
+	private AuthenticationService authenticationService;
+	private AccountService accountService;
+	private UserService userService;
+	private TransferService transferService;
+
+	public static void main(String[] args) {
+		App app = new App(new ConsoleService(System.in, System.out),
+				new AuthenticationService(API_BASE_URL),
+				new AccountService(API_BASE_URL),
+				new UserService(API_BASE_URL),
+				new TransferService(API_BASE_URL));
+		app.run();
+	}
+
+	public App(ConsoleService console, AuthenticationService authenticationService, AccountService accountService, UserService userService, TransferService transferSerivce) {
 		this.console = console;
 		this.authenticationService = authenticationService;
+		this.accountService = accountService;
+		this.userService = userService;
+		this.transferService = transferService;
 	}
 
 	public void run() {
 		System.out.println("*********************");
 		System.out.println("* Welcome to TEnmo! *");
 		System.out.println("*********************");
-		
+
 		registerAndLogin();
 		mainMenu();
 	}
@@ -55,6 +77,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		while(true) {
 			String choice = (String)console.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			if(MAIN_MENU_OPTION_VIEW_BALANCE.equals(choice)) {
+
 				viewCurrentBalance();
 			} else if(MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS.equals(choice)) {
 				viewTransferHistory();
@@ -74,50 +97,47 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
+		BigDecimal balance = accountService.getBalance(currentUser.getToken());
+		System.out.println("Your current account balance is: " + balance);
 
-		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
-		try{
-			System.out.println("Your Current Balance is: $"+ accountService.getBalance());
-		}catch(Exception e){
-			System.out.println("Error :(" +  e.getMessage());
-		}
-		// TODO Auto-generated method stub
-		
+
 	}
 
-	private void viewTransferHistory() {
-		{
-			TransferService viewAllTransfers = new TransferService(API_BASE_URL, currentUser);
-			viewAllTransfers.transfersList();
 
-		}
-		
+	private void viewTransferHistory() {
+		// TODO Auto-generated method stub
+
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void sendBucks() {
-		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
-
-		try
-		{
-			transferService.sendMoney();
-
+		showUsers();
+		Integer toUserId = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
+		if (toUserId != 0) {
+			int amount = console.getUserInputInteger("Enter amount");
+			BigDecimal amountBD = new BigDecimal(amount);
+			Transfer transfer = new Transfer(amountBD, toUserId);
+			transferService.createTransfer(transfer, currentUser.getToken());
+			System.out.println(amount + " TE Bucks were sent to user " + toUserId);
+		} else {
+			System.out.println("Cancelling transfer...");
 		}
-		catch (Exception e)
-		{
-			System.out.println("ERROR: " + e.getMessage());
-		}
+
 	}
+
+
+
+
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	private void exitProgram() {
 		System.exit(0);
 	}
@@ -143,18 +163,18 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void register() {
 		System.out.println("Please register a new user account");
 		boolean isRegistered = false;
-        while (!isRegistered) //will keep looping until user is registered
-        {
-            UserCredentials credentials = collectUserCredentials();
-            try {
-            	authenticationService.register(credentials);
-            	isRegistered = true;
-            	System.out.println("Registration successful. You can now login.");
-            } catch(AuthenticationServiceException e) {
-            	System.out.println("REGISTRATION ERROR: "+e.getMessage());
+		while (!isRegistered) //will keep looping until user is registered
+		{
+			UserCredentials credentials = collectUserCredentials();
+			try {
+				authenticationService.register(credentials);
+				isRegistered = true;
+				System.out.println("Registration successful. You can now login.");
+			} catch(AuthenticationServiceException e) {
+				System.out.println("REGISTRATION ERROR: "+e.getMessage());
 				System.out.println("Please attempt to register again.");
-            }
-        }
+			}
+		}
 	}
 
 	private void login() {
@@ -163,7 +183,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		while (currentUser == null) //will keep looping until user is logged in
 		{
 			UserCredentials credentials = collectUserCredentials();
-		    try {
+			try {
 				currentUser = authenticationService.login(credentials);
 			} catch (AuthenticationServiceException e) {
 				System.out.println("LOGIN ERROR: "+e.getMessage());
@@ -171,10 +191,34 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			}
 		}
 	}
-	
+
 	private UserCredentials collectUserCredentials() {
 		String username = console.getUserInput("Username");
 		String password = console.getUserInput("Password");
 		return new UserCredentials(username, password);
 	}
+	/*
+	private HttpEntity makeAuthEntity() {
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setBearerAuth(AUTH_TOKEN);
+	        HttpEntity entity = new HttpEntity<>(headers);
+	        return entity;
+	    }
+*/
+	private void showUsers() {
+		System.out.println("-------------------------------------------");
+		System.out.println("Users");
+		System.out.println("ID          Name");
+		System.out.println("-------------------------------------------");
+		User[] getUsers = userService.getUsers(currentUser.getToken());
+		for (User items : getUsers) {
+
+			System.out.println(items.getId() + "           " + items.getUsername());
+
+		}
+
+		System.out.println("---------");
+		System.out.println("         ");
+	}
+
 }
