@@ -4,15 +4,15 @@ import java.math.BigDecimal;
 
 public class Transfer {
     private BigDecimal amount;
+    private int account_to;
+
+
+
     public Transfer(BigDecimal amount, int account_to) {
         super();
         this.amount = amount;
         this.account_to = account_to;
     }
-    private int account_to;
-
-
-
     public BigDecimal getAmount() {
         return amount;
     }

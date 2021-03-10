@@ -23,7 +23,7 @@ public class JdbcAccountDAO implements AccountDAO {
     }
 
     @Override
-    public Account getAccountByUserId(Long userId) {
+    public Account getAccountByUserId(int userId) {
         Account account = null;
         String sql = "SELECT account_id, user_id, balance FROM accounts WHERE user_id = ?";
 
@@ -39,7 +39,7 @@ public class JdbcAccountDAO implements AccountDAO {
         jdbcTemplate.update(sql, account.getBalance(), account.getAccountId());
     }
     private Account mapRowToAccount(SqlRowSet rs) {
-        return new Account(rs.getLong("account_id"), rs.getLong("user_id"), rs.getBigDecimal("balance"));
+        return new Account(rs.getInt("account_id"), rs.getInt("user_id"), rs.getBigDecimal("balance"));
     }
 
 

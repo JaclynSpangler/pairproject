@@ -5,27 +5,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Account {
-    private Long accountId;
-    private Long userId;
+    private int accountId;
+    private int userId;
     private BigDecimal balance;
 
-    public Account(Long accountId, Long userId, BigDecimal balance) {
+    public Account(int accountId, int userId, BigDecimal balance) {
         super();
         this.accountId = accountId;
         this.userId = userId;
         this.balance = balance;
     }
 
-    public Long getAccountId() {
+    public int getAccountId() {
         return accountId;
     }
-    public void setAccountId(Long accountId) {
+    public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
-    public Long getUserId() {
+    public int getUserId() {
         return userId;
     }
-    public void setUserId(Long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
     public BigDecimal getBalance() {

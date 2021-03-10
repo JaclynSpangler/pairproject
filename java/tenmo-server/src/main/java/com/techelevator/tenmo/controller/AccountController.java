@@ -35,11 +35,11 @@ public class AccountController {
 
     @RequestMapping(value = "/balance", method = RequestMethod.GET)
     public BigDecimal getBalance(Principal principal) throws UsernameNotFoundException {
-        Long userId = getCurrentUserId(principal);
+        int userId = getCurrentUserId(principal);
         return accountDAO.getAccountByUserId(userId).getBalance();
     }
 
-    public Long getCurrentUserId(Principal principal) {
+    public int getCurrentUserId(Principal principal) {
         return userDAO.findByUsername(principal.getName()).getId();
 
     }

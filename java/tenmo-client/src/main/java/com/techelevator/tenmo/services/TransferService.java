@@ -28,13 +28,12 @@ public class TransferService {
         return response.getBody();
     }
 
-    /*
+
     public Transfer getUsers(String authToken) {
         HttpEntity<?> entity = new HttpEntity<>(authHeaders(authToken));
-        ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.GET, entity, User[].class);
+        ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.GET, entity, Transfer.class);
         return response.getBody();
     }
-    */
     private HttpHeaders authHeaders(String authToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
