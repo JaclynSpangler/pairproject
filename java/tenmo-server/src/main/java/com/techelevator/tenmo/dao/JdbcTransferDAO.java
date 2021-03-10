@@ -81,7 +81,7 @@ public class JdbcTransferDAO implements TransferDAO {
     @Override
     public List<Transfer> findAll(int userId){
         List<Transfer> transfers = new ArrayList<>();
-        String sql= "\"SELECT t.*, u.username AS userFrom, v.username AS userTo FROM transfers t " +
+        String sql= "SELECT t.*, u.username AS userFrom, v.username AS userTo FROM transfers t " +
                 "JOIN accounts a ON t.account_from = a.account_id " +
                 "JOIN accounts b ON t.account_to = b.account_id " +
                 "JOIN users u ON a.user_id = u.user_id " +

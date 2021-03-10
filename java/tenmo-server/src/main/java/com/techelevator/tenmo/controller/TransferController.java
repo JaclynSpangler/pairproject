@@ -50,9 +50,9 @@ public class TransferController {
         transferDAO.updateBalances(transfer);
     }
 
-    @RequestMapping(value = "/transfers/{userId}", method = RequestMethod.GET)
-    public List<Transfer> getAllMyTransfers(@PathVariable int id) {
-        List<Transfer> output = transferDAO.findAll(id);
+    @RequestMapping(value = "/transfers/all", method = RequestMethod.GET)
+    public List<Transfer> getAllMyTransfers(Principal principal) {
+        List<Transfer> output = transferDAO.findAll(userDAO.findIdByUsername(principal.getName()));
         return output;
     }
 

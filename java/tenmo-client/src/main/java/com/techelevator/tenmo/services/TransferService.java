@@ -31,7 +31,7 @@ public class TransferService {
     public Transfer[] transfersList() {
         Transfer[] output = null;
         try {
-            output = restTemplate.exchange(BASE_SERVICE_URL + "/" + currentUser.getUser().getId(), HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+            output = restTemplate.exchange(BASE_SERVICE_URL + "/all", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
             System.out.println("-------------------------------------------\r\n" +
                     "Transfers " +
                     "ID          From/To                 Amount " +
@@ -77,11 +77,11 @@ public class TransferService {
         return output;
     }
 
-    public Transfer getUsers() {
-        HttpEntity<?> entity = new HttpEntity<>(makeAuthEntity());
-        ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.GET, entity, Transfer.class);
-        return response.getBody();
-    }
+//    public Transfer getUsers() {
+//        HttpEntity<?> entity = new HttpEntity<>(makeAuthEntity());
+//        ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL, HttpMethod.GET, entity, Transfer.class);
+//        return response.getBody();
+//    }
     private HttpEntity makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(currentUser.getToken());
