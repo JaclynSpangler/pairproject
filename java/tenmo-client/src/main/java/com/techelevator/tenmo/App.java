@@ -106,11 +106,10 @@ public class App {
 
 	private void viewTransferHistory() {
 		showTransfers();
-		TransferService ts = new TransferService(API_BASE_URL);
-		ts.transfersList(currentUser.getToken());
+		transferService.transfersList(currentUser.getToken());
 		int details =console.getUserInputInteger("Enter the Transfer ID for details: ");
 		if(details !=0){
-			Transfer transfer= ts.transferDetails(currentUser.getToken(), details);
+			Transfer transfer= transferService.transferDetails(currentUser.getToken(), details);
 			showTransferDetails(transfer);
 		}
 
@@ -123,7 +122,7 @@ public class App {
 
 	private void sendBucks() {
 		showUsers();
-		Integer toUserId = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
+		int toUserId = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
 		if (toUserId != 0) {
 			int amount = console.getUserInputInteger("Enter amount");
 			BigDecimal amountBD = new BigDecimal(amount);

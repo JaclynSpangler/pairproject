@@ -21,8 +21,8 @@ public class TransferService {
     private AuthenticatedUser currentUser;
 
 
-    public TransferService(String baseUrl) {
-        this.BASE_SERVICE_URL = baseUrl + "account/transfers";
+    public TransferService(String BASE_SERVICE_URL) {
+        this.BASE_SERVICE_URL = BASE_SERVICE_URL + "account/transfers";
     }
 
     public Transfer createTransfer(Transfer transfer) {
@@ -31,9 +31,8 @@ public class TransferService {
     }
 
     public Transfer[] transfersList(String authToken) {
-        Transfer[] output = null;
         HttpEntity<?> entity = new HttpEntity<>(authHeaders(authToken));
-        output = restTemplate.exchange(BASE_SERVICE_URL + "/all", HttpMethod.GET, entity, Transfer[].class).getBody();
+        Transfer[] output = restTemplate.getForObject(BASE_SERVICE_URL + "/all", Transfer[].class);
         return output;
     }
 
@@ -41,8 +40,8 @@ public class TransferService {
     public Transfer transferDetails(String authTokn, int transferId) {
         Transfer transfer = new Transfer();
         HttpEntity<?> entity = new HttpEntity<>(authHeaders(authTokn));
-        transfer = restTemplate.exchange(BASE_SERVICE_URL + "/" + transfer.getTransferId() + "/details", HttpMethod.GET, entity, Transfer.class).getBody();
-        return transfer;
+        ResponseEntity<Transfer> response = restTemplate.exchange(BASE_SERVICE_URL + "/" + transfer.getTransferId() + "/details", HttpMethod.GET, entity, Transfer.class);
+        return response.getBody();
     }
 
     //    public Transfer getUsers() {
